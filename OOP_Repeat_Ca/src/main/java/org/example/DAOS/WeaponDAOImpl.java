@@ -6,5 +6,5 @@ import org.example.Exceptions.DaoException;
 import java.util.List;
 
 public interface WeaponDAOImpl {
-
+    public List<weaponDTO> getAllEntites() throws DaoException;
 }
