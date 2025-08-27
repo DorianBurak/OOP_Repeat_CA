@@ -58,4 +58,44 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
         }
         return  EntityList;
     }
+
+    //Q2
+    public weaponDTO getEntityById(int id) throws DaoException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        weaponDTO weapon = null;
+
+        try {
+            connection = this.getConnection();
+            String query = "SELECT * FROM weapon WHERE id = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int Weaponid = resultSet.getInt("id");
+                String Name = resultSet.getString("name");
+                String Type = resultSet.getString("type");
+                double Weight = resultSet.getDouble("weight");
+                int Durability = resultSet.getInt("durability");
+                int Attack = resultSet.getInt("attack");
+                String Motivity = resultSet.getString("motivity");
+                String Technique = resultSet.getString("technique");
+
+                weapon = new weaponDTO(Weaponid, Name, Type, Weight, Durability, Attack, Motivity, Technique);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("getEntityById() " + e.getMessage());
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) freeConnection(connection);
+            } catch (SQLException e) {
+                throw new DaoException("getEntityById() Closing resources failed: " + e.getMessage());
+            }
+        }
+        return weapon;
+    }
 }
