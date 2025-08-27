@@ -18,6 +18,7 @@ public class Menu {
             System.out.println("Welcome to the Weapons DAO");
             System.out.println("1. List All Weapons");
             System.out.println("2. Find Weapon by ID");
+            System.out.println("3. Delete Weapon by ID");
             System.out.println("10. Exit");
             option = scanner.nextInt();
             scanner.nextLine();
@@ -28,6 +29,9 @@ public class Menu {
                     break;
                 case 2:
                     findWeaponById();
+                    break;
+                case 3:
+                    deleteWeaponById();
                     break;
                 case 10:
                     System.out.println("Exiting");
@@ -66,6 +70,27 @@ public class Menu {
             }
         } catch (DaoException e) {
             System.err.println("Error retrieving Warframe: " + e.getMessage());
+        }
+    }
+
+    //Q3
+    private void deleteWeaponById() {
+        System.out.print("Enter Weapon ID to delete: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Are you sure you want to delete Weapon with ID " + id + "? (yes/no): ");
+        String confirmation = scanner.nextLine();
+
+        if (confirmation.equalsIgnoreCase("yes")) {
+            try {
+                dao.deleteEntityById(id);
+                System.out.println("Weapon with ID " + id + " has been deleted.");
+            } catch (DaoException e) {
+                System.err.println("Error deleting Weapon: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Deletion canceled.");
         }
     }
 

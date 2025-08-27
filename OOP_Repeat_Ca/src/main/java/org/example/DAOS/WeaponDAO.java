@@ -98,4 +98,37 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
         }
         return weapon;
     }
+
+    //Q3
+    public void deleteEntityById(int id) throws DaoException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+
+        try {
+            connection = this.getConnection();
+            String query = "DELETE FROM weapon WHERE id = ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, id);
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("Successfully deleted weapon with id " + id);
+            } else {
+                System.out.println("No weapon found with id " + id);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("deleteWeaponById() " + e.getMessage());
+        } finally {
+            try {
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                if (connection != null) {
+                    freeConnection(connection);
+                }
+            } catch (SQLException e) {
+                throw new DaoException("Error closing resources: " + e.getMessage());
+            }
+        }
+    }
 }
