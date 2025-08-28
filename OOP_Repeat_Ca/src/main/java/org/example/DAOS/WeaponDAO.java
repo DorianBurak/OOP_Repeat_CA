@@ -3,10 +3,7 @@ package org.example.DAOS;
 import org.example.DTOs.weaponDTO;
 import org.example.Exceptions.DaoException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,5 +127,49 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
                 throw new DaoException("Error closing resources: " + e.getMessage());
             }
         }
+    }
+
+    //Q4
+    public weaponDTO insertEntity(weaponDTO weapon) throws DaoException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet generatedKeys = null;
+
+        try {
+            connection = this.getConnection();
+            String query = "INSERT INTO weapon (name, type, weight, durability, attack, motivity, technique) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
+            preparedStatement.setString(1, weapon.getName());
+            preparedStatement.setString(2, weapon.getType());
+            preparedStatement.setDouble(3, weapon.getWeight());
+            preparedStatement.setInt(4, weapon.getDurability());
+            preparedStatement.setInt(5, weapon.getAttack());
+            preparedStatement.setString(6, weapon.getMotivity());
+            preparedStatement.setString(7, weapon.getTechnique());
+
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Insertion failed, no rows affected.");
+            }
+
+            generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                weapon.setId(generatedKeys.getInt(1));
+            } else {
+                throw new SQLException("Insertion failed, no ID obtained.");
+            }
+        } catch (SQLException e) {
+            throw new DaoException("insertWeapon() " + e.getMessage());
+        } finally {
+            try {
+                if (generatedKeys != null) generatedKeys.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) freeConnection(connection);
+            } catch (SQLException e) {
+                throw new DaoException("insertWeapon() " + e.getMessage());
+            }
+        }
+        return weapon;
     }
 }

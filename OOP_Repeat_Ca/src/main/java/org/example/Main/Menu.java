@@ -19,6 +19,7 @@ public class Menu {
             System.out.println("1. List All Weapons");
             System.out.println("2. Find Weapon by ID");
             System.out.println("3. Delete Weapon by ID");
+            System.out.println("4. Add Weapon");
             System.out.println("10. Exit");
             option = scanner.nextInt();
             scanner.nextLine();
@@ -33,6 +34,9 @@ public class Menu {
                 case 3:
                     deleteWeaponById();
                     break;
+                case 4:
+                    insertWeapon();
+                    break;
                 case 10:
                     System.out.println("Exiting");
             }
@@ -45,31 +49,31 @@ public class Menu {
         try {
             List<weaponDTO> stats = dao.getAllEntites();
             if (stats.isEmpty()) {
-                System.out.println("No Warframes found.");
+                System.out.println("No Weapons found.");
             } else {
                 for (weaponDTO w : stats) {
                     System.out.println(w);
                 }
             }
         } catch (DaoException e) {
-            System.err.println("Error retrieving Warframes: " + e.getMessage());
+            System.err.println("Error retrieving weapons: " + e.getMessage());
         }
     }
 
     //Q2
     private void findWeaponById() {
-        System.out.print("Enter Warframe ID: ");
+        System.out.print("Enter Weapon ID: ");
         int id = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine();
         try {
-            weaponDTO warframe = dao.getEntityById(id);
-            if (warframe != null) {
-                System.out.println("Found: " + warframe);
+            weaponDTO weapon = dao.getEntityById(id);
+            if (weapon != null) {
+                System.out.println("Found: " + weapon);
             } else {
-                System.out.println("No Warframe found with ID " + id);
+                System.out.println("No Weapon found with ID " + id);
             }
         } catch (DaoException e) {
-            System.err.println("Error retrieving Warframe: " + e.getMessage());
+            System.err.println("Error retrieving Weapon: " + e.getMessage());
         }
     }
 
@@ -91,6 +95,40 @@ public class Menu {
             }
         } else {
             System.out.println("Deletion canceled.");
+        }
+    }
+
+    //Q4
+    private void insertWeapon() {
+        System.out.println("Enter Weapon Name: ");
+        String name = scanner.nextLine();
+
+        System.out.println("Enter Weapon Type: ");
+        String type = scanner.nextLine();
+
+        System.out.println("Enter Weapon Weight: ");
+        double weight = scanner.nextDouble();
+
+        System.out.println("Enter Weapon Durability: ");
+        int durability = scanner.nextInt();
+
+        System.out.println("Enter Weapon Attack");
+        int attack = scanner.nextInt();
+
+        System.out.println("Enter Weapon Motivity");
+        String motivity = scanner.nextLine();
+
+        System.out.println("Enter Weapon Technique");
+        String technique = scanner.nextLine();
+
+
+        weaponDTO newWeapon = new weaponDTO(0, name, type, weight, durability, attack, motivity, technique);
+
+        try {
+            weaponDTO insertedWeapon = dao.insertEntity(newWeapon);
+            System.out.println("Inserted Successfully! New Weapon ID: " + insertedWeapon.getId());
+        } catch (DaoException e) {
+            System.err.println("Error inserting Weapon: " + e.getMessage());
         }
     }
 
