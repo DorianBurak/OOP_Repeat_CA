@@ -20,6 +20,7 @@ public class Menu {
             System.out.println("2. Find Weapon by ID");
             System.out.println("3. Delete Weapon by ID");
             System.out.println("4. Add Weapon");
+            System.out.println("5. Filter Weapons");
             System.out.println("10. Exit");
             option = scanner.nextInt();
             scanner.nextLine();
@@ -36,6 +37,9 @@ public class Menu {
                     break;
                 case 4:
                     insertWeapon();
+                    break;
+                case 5:
+                    filterWeapons();
                     break;
                 case 10:
                     System.out.println("Exiting");
@@ -129,6 +133,27 @@ public class Menu {
             System.out.println("Inserted Successfully! New Weapon ID: " + insertedWeapon.getId());
         } catch (DaoException e) {
             System.err.println("Error inserting Weapon: " + e.getMessage());
+        }
+    }
+
+    //Q5
+    private void filterWeapons() {
+        System.out.println("Filter by (name, type, weight, durability, attack, motivity, technique): ");
+        String column = scanner.nextLine();
+        System.out.println("Enter value to filter by: ");
+        String value = scanner.nextLine();
+
+        try {
+            List<weaponDTO> filteredWeapons = dao.getEntitiesByFilter(column, value);
+            if (filteredWeapons.isEmpty()) {
+                System.out.println("No matching weapons found.");
+            } else {
+                for (weaponDTO weapon : filteredWeapons) {
+                    System.out.println(weapon);
+                }
+            }
+        } catch (DaoException e) {
+            System.err.println("Error filtering weapons: " + e.getMessage());
         }
     }
 

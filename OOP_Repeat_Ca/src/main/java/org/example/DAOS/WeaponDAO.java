@@ -172,4 +172,50 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
         }
         return weapon;
     }
+
+    //Q5
+    public List<weaponDTO> getEntitiesByFilter(String column, String value) throws DaoException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        List<weaponDTO> filteredList = new ArrayList<>();
+
+        try {
+            connection = this.getConnection();
+            List<String> allowedColumns = List.of("name", "type", "weight", "durability", "attack", "motivity", "technique");
+            if (!allowedColumns.contains(column.toLowerCase())) {
+                throw new DaoException("Invalid filter column.");
+            }
+
+            String query = "SELECT * FROM weapon WHERE " + column + " LIKE ?";
+            preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, "%" + value + "%");
+
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String Name = resultSet.getString("name");
+                String Type = resultSet.getString("type");
+                double Weight = resultSet.getDouble("weight");
+                int Durability = resultSet.getInt("durability");
+                int Attack = resultSet.getInt("attack");
+                String Motivity = resultSet.getString("motivity");
+                String Technique = resultSet.getString("technique");
+
+                weaponDTO weapon = new weaponDTO(id, Name, Type, Weight, Durability, Attack, Motivity, Technique);
+                filteredList.add(weapon);
+            }
+        } catch (SQLException e) {
+            throw new DaoException("Error retrieving filtered entities: " + e.getMessage());
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) freeConnection(connection);
+            } catch (SQLException e) {
+                throw new DaoException("Error closing resources: " + e.getMessage());
+            }
+        }
+        return filteredList;
+    }
 }
