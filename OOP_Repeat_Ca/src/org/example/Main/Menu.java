@@ -24,7 +24,7 @@ public class Menu {
             System.out.println("5. Filter Weapons");
             System.out.println("6. List All Weapons by Json");
             System.out.println("7. Find Weapon by ID by Json");
-            System.out.println("10. Exit");
+            System.out.println("8. Exit");
             option = scanner.nextInt();
             scanner.nextLine();
 
@@ -50,9 +50,10 @@ public class Menu {
                 case 7:
                     findWeapomByJson();
                     break;
-                case 10:
+                case 8:
                     System.out.println("Exiting");
             }
+            while (option != 8);
         }
         while(option != 0);
     }
@@ -130,12 +131,13 @@ public class Menu {
 
         System.out.println("Enter Weapon Motivity");
         String motivity = scanner.nextLine();
+        scanner.nextLine();
 
         System.out.println("Enter Weapon Technique");
         String technique = scanner.nextLine();
 
 
-        weaponDTO newWeapon = new weaponDTO(0, name, type, weight, durability, attack, motivity, technique);
+        weaponDTO newWeapon = new weaponDTO(name, type, weight, durability, attack, motivity, technique);
 
         try {
             weaponDTO insertedWeapon = dao.insertEntity(newWeapon);

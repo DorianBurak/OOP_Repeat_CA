@@ -11,7 +11,14 @@ public class weaponDTO {
     private String technique;
 
     // Default constructor
-    public weaponDTO() {
+    public weaponDTO(String name, String type, double weight, int durability, int attack, String motivity, String technique) {
+        this.name = name;
+        this.type = type;
+        this.weight = weight;
+        this.durability = durability;
+        this.attack = attack;
+        this.motivity = motivity;
+        this.technique = technique;
     }
 
     // Constructor with all fields

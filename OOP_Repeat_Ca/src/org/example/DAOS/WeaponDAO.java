@@ -165,7 +165,6 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
             if (generatedKeys.next()) {
                 int newId = generatedKeys.getInt(1);
                 weapon.setId(newId);
-                // Add to cache
                 weaponIdCache.add(newId);
             } else {
                 throw new SQLException("Insertion failed, no ID obtained.");
