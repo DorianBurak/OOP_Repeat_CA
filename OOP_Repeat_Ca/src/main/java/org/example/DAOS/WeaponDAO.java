@@ -2,10 +2,13 @@ package org.example.DAOS;
 
 import org.example.DTOs.weaponDTO;
 import org.example.Exceptions.DaoException;
+import org.example.json.JsonManager;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.DAOS.WeaponDAOImpl {
 
@@ -58,6 +61,11 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
 
     //Q2
     public weaponDTO getEntityById(int id) throws DaoException {
+        if (!weaponIdCache.contains(id)) {
+            System.out.println("ID not found in cache. Skipping database query.");
+            return null;
+        }
+
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -110,6 +118,7 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Successfully deleted weapon with id " + id);
+                weaponIdCache.remove(id);
             } else {
                 System.out.println("No weapon found with id " + id);
             }
@@ -155,7 +164,10 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
 
             generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
-                weapon.setId(generatedKeys.getInt(1));
+                int newId = generatedKeys.getInt(1);
+                weapon.setId(newId);
+                // Add to cache
+                weaponIdCache.add(newId);
             } else {
                 throw new SQLException("Insertion failed, no ID obtained.");
             }
@@ -218,4 +230,41 @@ public class WeaponDAO extends org.example.DAOS.MySqlDao implements org.example.
         }
         return filteredList;
     }
+
+    //Q6
+    private final Set<Integer> weaponIdCache = new HashSet<>();
+
+    public WeaponDAO() {
+        try {
+            initializeCache();
+        } catch (DaoException e) {
+            System.err.println("Error initializing weapon ID cache: " + e.getMessage());
+        }
+    }
+
+    private void initializeCache() throws DaoException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            connection = this.getConnection();
+            String query = "SELECT id FROM weapon";
+            preparedStatement = connection.prepareStatement(query);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                weaponIdCache.add(resultSet.getInt("id"));
+            }
+        } catch (SQLException e) {
+            throw new DaoException("initializeCache() " + e.getMessage());
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) freeConnection(connection);
+            } catch (SQLException e) {
+                throw new DaoException("initializeCache() Closing resources failed: " + e.getMessage());
+            }
+        }
+    }
+
 }
