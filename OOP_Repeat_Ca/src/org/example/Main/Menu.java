@@ -48,7 +48,7 @@ public class Menu {
                     listAllWeaponsByJson();
                     break;
                 case 7:
-                    findWeapomByJson();
+                    findWeaponByJson();
                     break;
                 case 8:
                     System.out.println("Exiting");
@@ -180,7 +180,7 @@ public class Menu {
     }
 
     //Q7
-    private void findWeapomByJson() {
+    private void findWeaponByJson() {
         System.out.print("Enter Weapon ID to convert to JSON: ");
         int id = scanner.nextInt();
         scanner.nextLine(); // Consume newline
